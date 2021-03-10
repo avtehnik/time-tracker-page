@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GoJS Class Hierarchy Tree</title>
+  <meta name="description" content="The JavaScript class hierarchy defined by the GoJS library, arranged as a tree."/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/bootstrap.min.css"/>
+  <style>
+
+
+    .form-control.task,
+    .form-control.time {
+      width: 80px;
+    }
+
+    .form-control.comment {
+      width: 353px;
+    }
+
+    .container {
+      margin-top: 100px;
+    }
+  </style>
+
+</head>
+<body>
+<div id="vue-app" class="container">
+  <h1>Total {{totalTime}}h Remaining {{lastTime.last}} overtime {{lastTime.overtime}} </h1>
+  <div class="row">
+    <div class="col-md-7">
+
+      <ul class="list-group">
+        <li class="list-group-item">
+          <div class="form-inline">
+            <div class="form-group">
+              <input type="text" class="form-control" v-model="task" size="10" placeholder="task">
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-control time" v-model="time" size="10" placeholder="time">
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control" v-model="comment" placeholder="comment">
+            </div>
+            <button v-on:click="addRow()" class="btn btn-default">Add</button>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <button v-on:click="addTask(73647,'ek daily', 0.5)" class="btn btn-default">ek daily 0.5</button>
+          <button v-on:click="addTask(73647,'ek daily', 1)" class="btn btn-default">ek daily 1</button>
+          <button v-on:click="addTask(73648,'n daily',0.5)" class="btn btn-default">n 0.5</button>
+          <button v-on:click="addTask(73648,'estimate game', 1)" class="btn btn-default">n estimate 1</button>
+        </li>
+      </ul>
+
+      <ul class="list-group">
+        <li class="list-group-item" v-for="(timeItem, index) in timeSeries">
+          <div class="form-inline">
+            <div class="form-group">
+              <input type="text" class="form-control task" v-model="timeItem.task" placeholder="task">
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-control time" v-model="timeItem.time" placeholder="time">
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control comment" v-model="timeItem.comment" placeholder="comment">
+            </div>
+            <div class="form-group">
+              <button v-on:click="deleteItem(index)" class="btn btn-default">x</button>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-5">
+      <div v-for="timeItem in timeSeries" class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{timeItem.task}} {{timeItem.time}}</h3>
+        </div>
+        <div class="panel-body">
+          {{timeItem.comment}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/vue.js"></script>
+<script src="js/jquery-3.5.1.min.js"></script>
+
+<script id="code">
+
+    var vueApp = new Vue({
+        el: '#vue-app',
+        data: {
+            task: null,
+            time: null,
+            comment: null,
+            timeSeries: [
+                {
+                    'task': 'next1',
+                    'comment': 'hello',
+                    'time': 9.3
+                }
+            ],
+        },
+        methods: {
+            addRow: function() {
+                this.timeSeries.push(
+                    {
+                        'task': this.task,
+                        'comment': this.comment,
+                        'time': this.time
+                    }
+                );
+
+                this.task = null;
+                this.comment = null;
+                this.time = null;
+
+            },
+            addTask: function(taskId, comment, time) {
+                this.timeSeries.push(
+                    {
+                        'task': taskId,
+                        'comment': comment,
+                        'time': time
+                    }
+                );
+            },
+            deleteItem: function(index) {
+                console.log(index);
+                this.timeSeries.splice(index, 1);
+
+            },
+        },
+        beforeMount() {
+            console.log('App mounted!');
+            if (localStorage.getItem('timeSeries')) this.timeSeries = JSON.parse(localStorage.getItem('timeSeries'));
+        },
+        computed: {
+            totalTime: function() {
+                localStorage.setItem('timeSeries', JSON.stringify(this.timeSeries));
+                return this.timeSeries.reduce((accumulator, item) => {
+                    var val = parseFloat(item.time);
+                    if (isNaN(val)) {
+                        val = 0;
+                    }
+                    return accumulator + val;
+                }, 0).toFixed(2);
+            },
+
+            lastTime: function() {
+                var time = this.timeSeries.reduce((accumulator, item) => {
+                    var val = parseFloat(item.time);
+                    if (isNaN(val)) {
+                        val = 0;
+                    }
+                    return accumulator + val;
+                }, 0);
+
+
+                var last = (8 - time).toFixed(2);;
+                var overtime = 0;
+                if (last < 0) {
+                    overtime = Math.abs(last).toFixed(2);
+                    last = 0;
+                }
+
+                return {
+                    last: last,
+                    overtime: overtime
+                };
+            }
+        }
+    });
+</script>
+</body>
+</html>
