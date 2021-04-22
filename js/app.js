@@ -1,3 +1,13 @@
+
+function dateStr(){
+    var  d = new Date();
+    var day = ""+d.getDay();
+    if (day.length==1){
+        day = "0"+day;
+    }
+    return day+' '+d.getFullYear()
+}
+
 var vueApp = new Vue({
     el: '#vue-app',
     data: {
@@ -18,7 +28,8 @@ var vueApp = new Vue({
                 {
                     'task': this.task,
                     'comment': this.comment,
-                    'time': this.time
+                    'time': this.time,
+                    'date': dateStr()
                 }
             );
 
@@ -32,7 +43,8 @@ var vueApp = new Vue({
                 {
                     'task': taskId,
                     'comment': comment,
-                    'time': time
+                    'time': time,
+                    'date': dateStr()
                 }
             );
         },
