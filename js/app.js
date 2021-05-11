@@ -1,11 +1,8 @@
 
 function dateStr(){
-    var  d = new Date();
-    var day = ""+d.getDay();
-    if (day.length==1){
-        day = "0"+day;
-    }
-    return day+' '+d.getFullYear()
+    var  date = new Date();
+    var day = ("0" + date.getUTCDate()).slice(-2)
+    return day+' '+date.getFullYear() + ' '+date.getDay()
 }
 
 var vueApp = new Vue({
@@ -29,6 +26,7 @@ var vueApp = new Vue({
                     'task': this.task,
                     'comment': this.comment,
                     'time': this.time,
+                    'dateTime': new Date(),
                     'date': dateStr()
                 }
             );
