@@ -1,8 +1,7 @@
-
-function dateStr(){
-    var  date = new Date();
+function dateStr() {
+    var date = new Date();
     var day = ("0" + date.getUTCDate()).slice(-2)
-    return day+' '+date.getFullYear() + ' '+date.getDay()
+    return day + ' ' + date.getFullYear() + ' ' + date.getDay()
 }
 
 var vueApp = new Vue({
@@ -10,6 +9,8 @@ var vueApp = new Vue({
     data: {
         task: null,
         time: null,
+        apiKey: null,
+        taskDate: new Date().toLocaleDateString('en-CA'),
         comment: null,
         timeSeries: [
             // {
@@ -20,14 +21,18 @@ var vueApp = new Vue({
         ],
     },
     methods: {
+        saveApiKey: function() {
+            localStorage.setItem('apiKey', this.apiKey);
+        },
         addRow: function() {
+            console.log(this.taskDate);
             this.timeSeries.push(
                 {
                     'task': this.task,
                     'comment': this.comment,
                     'time': this.time,
                     'dateTime': new Date(),
-                    'date': dateStr()
+                    'date': this.taskDate
                 }
             );
 
@@ -42,19 +47,32 @@ var vueApp = new Vue({
                     'task': taskId,
                     'comment': comment,
                     'time': time,
-                    'date': dateStr()
+                    'date': this.taskDate
                 }
             );
         },
         deleteItem: function(index) {
             console.log(index);
             this.timeSeries.splice(index, 1);
+        },
+        save: function(index) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", 'http://localhost:8032/time_entries.json', true);
+            xhr.setRequestHeader("Content-type", "application/json");
 
+            xhr.onreadystatechange = function() {//Вызывает функцию при смене состояния.
+                if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+
+                    // Запрос завершён. Здесь можно обрабатывать результат.
+                }
+            }
+            xhr.send(JSON.stringify({apiKey: this.apiKey, "timeSeries": this.timeSeries}));
         },
     },
     beforeMount() {
         console.log('App mounted!');
         if (localStorage.getItem('timeSeries')) this.timeSeries = JSON.parse(localStorage.getItem('timeSeries'));
+        if (localStorage.getItem('apiKey')) this.apiKey = localStorage.getItem('apiKey');
     },
     computed: {
         totalTime: function() {

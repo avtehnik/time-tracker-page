@@ -24,13 +24,16 @@
 </head>
 <body>
 <div id="vue-app" class="container">
-  <h1>Total {{totalTime}}h Remaining {{lastTime.last}} overtime {{lastTime.overtime}} </h1>
+  <h1>Total {{totalTime}}h Remaining {{lastTime.last}} overtime {{lastTime.overtime}}</h1>
   <div class="row">
-    <div class="col-md-7">
+    <div class="col-md-9">
 
       <ul class="list-group">
         <li class="list-group-item">
           <div class="form-inline">
+            <div class="form-group">
+              <input type="date" class="form-control" v-model="taskDate" size="10" placeholder="task">
+            </div>
             <div class="form-group">
               <input type="text" class="form-control" v-model="task" size="10" placeholder="task">
             </div>
@@ -44,10 +47,10 @@
           </div>
         </li>
         <li class="list-group-item">
-          <button v-on:click="addTask(73647,'ek daily meeting', 0.5)" class="btn btn-default">ek daily 0.5</button>
-          <button v-on:click="addTask(73647,'ek daily meeting', 1)" class="btn btn-default">ek daily 1</button>
-          <button v-on:click="addTask(73648,'n daily meeting',0.5)" class="btn btn-default">n 0.5</button>
-          <button v-on:click="addTask(73648,'n daily meeting',0.25)" class="btn btn-default">n 0.25</button>
+          <button v-on:click="addTask(73647,'daily meeting', 0.5)" class="btn btn-default">ek daily 0.5</button>
+          <button v-on:click="addTask(73647,'daily meeting', 1)" class="btn btn-default">ek daily 1</button>
+          <button v-on:click="addTask(73648,'daily meeting',0.5)" class="btn btn-default">n 0.5</button>
+          <button v-on:click="addTask(73648,'daily meeting',0.25)" class="btn btn-default">n 0.25</button>
           <button v-on:click="addTask(73648,'estimate game', 1)" class="btn btn-default">n estimate 1</button>
           <button v-on:click="addTask(75997,'Other meetings', 0.5)" class="btn btn-default">Other meetings 0.5</button>
         </li>
@@ -56,6 +59,9 @@
       <ul class="list-group">
         <li class="list-group-item" v-for="(timeItem, index) in timeSeries">
           <div class="form-inline">
+            <div class="form-group">
+              <input type="text" class="form-control " v-model="timeItem.date" placeholder="date">
+            </div>
             <div class="form-group">
               <input type="text" class="form-control task" v-model="timeItem.task" placeholder="task">
             </div>
@@ -71,8 +77,12 @@
           </div>
         </li>
       </ul>
+      <button v-on:click="save()" class="btn btn-default">Save</button>
+      <br>
+      <br>
+      <input type="password" class="form-control comment" v-model="apiKey" @change="saveApiKey" placeholder="apikey">
     </div>
-    <div class="col-md-5">
+    <div class="col-md-3">
       <div v-for="timeItem in timeSeries" class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">{{timeItem.task}} {{timeItem.time}} h [{{timeItem.date}}]</h3>
