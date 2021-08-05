@@ -10,17 +10,28 @@ app.use(cors())
 app.use(bodyParser.json())
 
 var Client = {
-    req: function(method, path, data, cb,apiKey) {
+    apiKey: null,
+    setApiKey: function(apiKey) {
+        this.apiKey = apiKey;
+    },
+    userId: null,
+    setUserId: function(userId) {
+        this.userId = userId;
+    },
+    req: function(method, path, data, cb) {
         var options = {
             uri: 'https://redmine.ekreative.com' + path,
             method: method,
-            form: data,
             headers: {
                 "Content-type": "application/json",
-                'X-Redmine-API-Key': apiKey
+                'X-Redmine-API-Key': Client.apiKey
             },
             json: true,
         };
+
+        if (data) {
+            options.form = data;
+        }
 
         request(options, function(error, response, body) {
             if (!error && response.statusCode == 200) {
@@ -31,22 +42,21 @@ var Client = {
         });
     },
 
-    myTimeEntries: function() {
-        Client.req('GET', '/time_entries.json?user_id=4', {}, function(data) {
-            console.log(data);
-        });
+    myTimeEntries: function(cb) {
+        Client.req('GET', '/time_entries.json?user_id=' + Client.userId, {}, cb);
     },
 
-    trackTime: function(data, apiKey) {
-        data.user_id = 4;
-        Client.req('POST', '/time_entries.json?user_id=4', {time_entry: data}, function(data) {
-            console.log(data);
-        }, apiKey);
+    trackTime: function(data, cb) {
+        data.user_id = Client.userId;
+        Client.req('POST', '/time_entries.json?user_id=' + Client.userId, {time_entry: data}, cb);
     },
 }
 
 app.post('/time_entries.json', (req, res) => {
-    req.body.timeSeries.forEach(function(item) {
+    Client.setUserId(req.headers['x-redmaine-userid']);
+    Client.setApiKey(req.headers['x-redmaine-token']);
+
+    req.body.forEach(function(item) {
         Client.trackTime(
             {
                 // project_id: 1094,
@@ -55,11 +65,21 @@ app.post('/time_entries.json', (req, res) => {
                 hours: item.time,
                 activity_id: 23,
                 comments: item.comment,
-            },
-            req.body.apiKey
+            }
         );
     })
     res.send(req.body)
+})
+
+app.get('/time_entries.json', (req, res) => {
+
+    Client.setUserId(req.headers['x-redmaine-userid']);
+    Client.setApiKey(req.headers['x-redmaine-token']);
+    Client.myTimeEntries(
+        function(data) {
+            res.send(data)
+        }
+    );
 })
 
 app.listen(port, () => {

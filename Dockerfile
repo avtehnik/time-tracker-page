@@ -1,4 +1,5 @@
 FROM node:14
 WORKDIR /usr/src/app
-COPY . .
-CMD [ "node", "app.js" ]
+RUN npm install -g nodemon
+ADD . .
+CMD [ "nodemon", "./app.js" ]

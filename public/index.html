@@ -23,16 +23,19 @@
 
 </head>
 <body>
-<div id="vue-app" class="container">
+<div id="vue-app" style="padding: 20px">
   <h1>Total {{totalTime}}h Remaining {{lastTime.last}} overtime {{lastTime.overtime}}</h1>
   <div class="row">
-    <div class="col-md-9">
+    <div class="col-md-7">
 
       <ul class="list-group">
         <li class="list-group-item">
           <div class="form-inline">
             <div class="form-group">
-              <input type="date" class="form-control" v-model="taskDate" size="10" placeholder="task">
+              <input type="date" class="form-control" v-model="taskDate" size="10" placeholder="task" @change="updateDate">
+            </div>
+            <div class="form-group">
+              <button class="form-control" v-on:click="updateDate">Set Today</button>
             </div>
             <div class="form-group">
               <input type="text" class="form-control" v-model="task" size="10" placeholder="task">
@@ -82,13 +85,31 @@
       <br>
       <input type="password" class="form-control comment" v-model="apiKey" @change="saveApiKey" placeholder="apikey">
     </div>
-    <div class="col-md-3">
+    <div class="col-md-5">
       <div v-for="timeItem in timeSeries" class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">{{timeItem.task}} {{timeItem.time}} h [{{timeItem.date}}]</h3>
         </div>
         <div class="panel-body">
           {{timeItem.comment}}
+        </div>
+      </div>
+      <h2>calendar</h2>
+      <div v-for="(dayItem, dayNmae) in calendar" class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{dayNmae}} {{dayItem.reduce( (accumulator, task) => accumulator + parseFloat(task.hours),0)}} h</h3>
+        </div>
+        <div class="panel-body">
+
+          <ul>
+            <li v-for="task in dayItem" style="padding: 3px"   >
+              {{task.project.name}} ({{task.issue.id}}) {{task.hours}}h<br>
+              {{task.comments}}
+              <br>
+            </li>
+
+
+          </ul>
         </div>
       </div>
     </div>
