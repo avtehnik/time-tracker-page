@@ -13,7 +13,11 @@
       }
 
       .form-control.comment {
-          width: 353px;
+          width: 453px;
+      }
+
+      .form-control.time {
+          width: 70px;
       }
 
       .container {
@@ -32,7 +36,7 @@
         <li class="list-group-item">
           <div class="form-inline">
             <div class="form-group">
-              <input type="date" class="form-control" v-model="taskDate" size="10" placeholder="task" @change="updateDate">
+              <input type="date" class="form-control" v-model="taskDate" size="5" placeholder="task" @change="updateDate">
             </div>
             <div class="form-group">
               <button class="form-control" v-on:click="updateDate">Set Today</button>
@@ -63,13 +67,13 @@
         <li class="list-group-item" v-for="(timeItem, index) in timeSeries">
           <div class="form-inline">
             <div class="form-group">
-              <input type="text" class="form-control " v-model="timeItem.date" placeholder="date">
+              <input type="text" class="form-control "  size="10" v-model="timeItem.date" placeholder="date">
             </div>
             <div class="form-group">
               <input type="text" class="form-control task" v-model="timeItem.task" placeholder="task">
             </div>
             <div class="form-group">
-              <input type="number" class="form-control time" v-model="timeItem.time" placeholder="time">
+              <input type="number" class="form-control time"  v-model="timeItem.time" placeholder="time">
             </div>
             <div class="form-group">
               <input type="text" class="form-control comment" v-model="timeItem.comment" placeholder="comment">
