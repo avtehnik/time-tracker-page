@@ -53,27 +53,19 @@
             <button v-on:click="addRow()" class="btn btn-default">Add</button>
           </div>
         </li>
-        <li class="list-group-item">
-          <button v-on:click="addTask(73647,'daily meeting', 0.5)" class="btn btn-default">ek daily 0.5</button>
-          <button v-on:click="addTask(73647,'daily meeting', 1)" class="btn btn-default">ek daily 1</button>
-          <button v-on:click="addTask(73648,'daily meeting',0.5)" class="btn btn-default">n 0.5</button>
-          <button v-on:click="addTask(73648,'daily meeting',0.25)" class="btn btn-default">n 0.25</button>
-          <button v-on:click="addTask(73648,'estimate game', 1)" class="btn btn-default">n estimate 1</button>
-          <button v-on:click="addTask(75997,'Other meetings', 0.5)" class="btn btn-default">Other meetings 0.5</button>
-        </li>
       </ul>
 
       <ul class="list-group">
         <li class="list-group-item" v-for="(timeItem, index) in timeSeries">
           <div class="form-inline">
             <div class="form-group">
-              <input type="text" class="form-control "  size="10" v-model="timeItem.date" placeholder="date">
+              <input type="text" class="form-control " size="10" v-model="timeItem.date" placeholder="date">
             </div>
             <div class="form-group">
               <input type="text" class="form-control task" v-model="timeItem.task" placeholder="task">
             </div>
             <div class="form-group">
-              <input type="number" class="form-control time"  v-model="timeItem.time" placeholder="time">
+              <input type="number" class="form-control time" v-model="timeItem.time" placeholder="time">
             </div>
             <div class="form-group">
               <input type="text" class="form-control comment" v-model="timeItem.comment" placeholder="comment">
@@ -84,35 +76,70 @@
           </div>
         </li>
       </ul>
-      <button v-on:click="save()" class="btn btn-default">Save</button>
+      <button v-on:click="save()" class="btn btn-default pull-right">Save</button>
       <br>
       <br>
-      <input type="password" class="form-control comment" v-model="apiKey" @change="saveApiKey" placeholder="apikey">
+      <br>
+      <br>
+      <h2>Common tasks editor</h2>
+      <table class="table">
+        <tr>
+          <td>taskId</td>
+          <td>time</td>
+          <td>comment</td>
+          <td>description</td>
+          <td>
+          </td>
+        </tr>
+        <tr v-for="(task, index ) in commonTasks">
+          <td><a target="_blank" v-bind:href="'https://redmine.ekreative.com/issues/'+task.taskId">{{task.taskId}}</a></td>
+          <td>{{task.time}}</td>
+          <td>{{task.comment}}</td>
+          <td>{{task.description}}</td>
+          <td>
+            <button class="btn btn-default" v-on:click="deleteCommonTask(index)">x</button>
+          </td>
+        </tr>
+        <tr>
+          <td><input type="number" class="form-control" v-model="commonTaskId" placeholder="task id"></td>
+          <td><input type="number" class="form-control time" v-model="commonTaskTime" placeholder="time"></td>
+          <td><input type="text" class="form-control" v-model="commonTaskComment" placeholder="comment"></td>
+          <td><input type="text" class="form-control" v-model="commonTaskDescription" placeholder="description"></td>
+          <td>
+            <button v-on:click="addCommonTask()" class="btn btn-default">Add</button>
+          </td>
+        </tr>
+      </table>
+
+
+      <br>
+      <br>
+      apikey
+      <input type="password" class="form-control" size="100" v-model="apiKey" @change="saveApiKey" placeholder="apikey">
     </div>
     <div class="col-md-5">
-      <div v-for="timeItem in timeSeries" class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">{{timeItem.task}} {{timeItem.time}} h [{{timeItem.date}}]</h3>
-        </div>
-        <div class="panel-body">
-          {{timeItem.comment}}
-        </div>
+
+      <div>
+        <h2>Common tasks</h2>
+          <button v-for="task in commonTasks" v-on:click="addTask(task)" class="btn btn-default badge">{{task.description}} {{task.time}}h</button>
+
       </div>
-      <h2>calendar</h2>
+      <h2>Last tasks</h2>
       <div v-for="(dayItem, dayNmae) in calendar" class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title">{{dayNmae}} {{dayItem.reduce( (accumulator, task) => accumulator + parseFloat(task.hours),0)}} h</h3>
+          <h3 class="panel-title">{{dayNmae}} {{dayItem.reduce((accumulator, task) => accumulator + parseFloat(task.hours), 0)}} h</h3>
         </div>
         <div class="panel-body">
 
           <ul>
-            <li v-for="task in dayItem" style="padding: 3px"   >
-              {{task.project.name}} ({{task.issue.id}}) {{task.hours}}h<br>
+            <li v-for="task in dayItem" style="padding: 3px">
+              <a target="_blank" v-bind:href="'https://redmine.ekreative.com/projects/'+task.project.id+'/issues'">{{task.project.name}}</a>
+
+              (<a target="_blank" v-bind:href="'https://redmine.ekreative.com/issues/'+task.issue.id">{{task.issue.id}}</a>)
+              <a target="_blank" v-bind:href="'https://redmine.ekreative.com/time_entries/'+task.id+'/edit'">{{task.hours}}h</a><br>
               {{task.comments}}
               <br>
             </li>
-
-
           </ul>
         </div>
       </div>

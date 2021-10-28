@@ -10,9 +10,17 @@ var vueApp = new Vue({
         task: null,
         time: null,
         apiKey: null,
-        calendar:{},
+        calendar: {},
         taskDate: new Date().toLocaleDateString('en-CA'),
         comment: null,
+
+        commonTaskId: null,
+        commonTaskTime: null,
+        commonTaskComment: null,
+        commonTaskDescription: null,
+
+        commonTasks: [
+        ],
         timeSeries: [
             // {
             //     'task': 'next1',
@@ -22,6 +30,19 @@ var vueApp = new Vue({
         ],
     },
     methods: {
+        addCommonTask: function() {
+            this.commonTasks.push(
+                {
+                    'comment': this.commonTaskComment,
+                    'description': this.commonTaskDescription,
+                    'time': this.commonTaskTime,
+                    'taskId': this.commonTaskId
+                })
+
+            localStorage.setItem('commonTasks', JSON.stringify(this.commonTasks));
+
+        },
+
         updateDate: function() {
             this.timeSeries.forEach(function(item) {
                 this.$set(item, 'date', this.taskDate)
@@ -50,12 +71,12 @@ var vueApp = new Vue({
             this.time = null;
 
         },
-        addTask: function(taskId, comment, time) {
+        addTask: function(task) {
             this.timeSeries.push(
                 {
-                    'task': taskId,
-                    'comment': comment,
-                    'time': time,
+                    'task': task.taskId,
+                    'comment': task.comment,
+                    'time': task.time,
                     'date': this.taskDate
                 }
             );
@@ -73,6 +94,9 @@ var vueApp = new Vue({
         deleteItem: function(index) {
             console.log(index);
             this.timeSeries.splice(index, 1);
+        },
+        deleteCommonTask: function(index) {
+            this.commonTasks.splice(index, 1);
         },
         save: function() {
             var xhr = new XMLHttpRequest();
@@ -110,6 +134,7 @@ var vueApp = new Vue({
         console.log('App mounted!');
         if (localStorage.getItem('timeSeries')) this.timeSeries = JSON.parse(localStorage.getItem('timeSeries'));
         if (localStorage.getItem('apiKey')) this.apiKey = localStorage.getItem('apiKey');
+        if (localStorage.getItem('commonTasks')) this.commonTasks = JSON.parse(localStorage.getItem('commonTasks'));
         this.load();
     },
     computed: {
