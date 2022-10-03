@@ -84,8 +84,14 @@ var vueApp = new Vue({
         loadCalendar: function(data) {
             var days = {};
             data.time_entries.forEach(function(item) {
+                console.log('ppp', item.id, item.comments);
+
                 if (!days.hasOwnProperty(item.spent_on)) {
                     days[item.spent_on] = [];
+                }
+                if (!item.hasOwnProperty('issue')) {
+
+                    item.issue = {'id':0}
                 }
                 days[item.spent_on].push(item);
             })
